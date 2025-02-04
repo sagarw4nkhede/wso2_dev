@@ -67,6 +67,7 @@
                                             },
                                             "language": "$7"
                                         },
+                                        "callbackData": "Callback data",
                                         "notifyUrl": "$8"
                                     }
                                 ]
@@ -108,6 +109,7 @@
                                                     },
                                                     "language": "$6"
                                                 },
+                                                "callbackData": "Callback data",
                                                 "notifyUrl": "$7"
                                             }
                                         ]
@@ -145,6 +147,7 @@
                                                     },
                                                     "language": "$5"
                                                 },
+                                                "callbackData": "Callback data",
                                                 "notifyUrl": "$6"
                                             }
                                         ]
@@ -166,28 +169,86 @@
         </else>
     </filter>
     <header name="Authorization" action="set" scope="transport" expression="get-property('apiKey')" />
+    <!-- <header name="Authorization" action="set" scope="transport" value="SADASD" /> -->
+    <log level="full">
+        <property name="INFO" value="Checking for Client Errors (4xx)" />
+        <property name="HTTP Status Code" expression="get-property('axis2', 'HTTP_SC')"/>
+    </log>
     <call>
         <endpoint>
             <address uri="${infobipUrl}" />
+            <!-- <address uri="https://8k5d33.api.infobip.com/whatsapp/1/message/templatess" /> -->
         </endpoint>
     </call>
+    <property name="statusCode" expression="get-property('axis2', 'HTTP_SC')"/>
+    <log level="full">
+        <property name="HTTP Status Code." expression="get-property('statusCode')"/>
+    </log>
+    
     <property name="infobipResponse"  expression="json-eval($.)" />
     <property name="integrationNo" scope="transport" type="STRING" value="I1125" />
     <property name="type" scope="transport" type="STRING" value="Response Body" />
+
+    <switch source="get-property('axis2', 'HTTP_SC')">
+        <case regex="401">
+            <log level="custom">
+                <property name="401" value="inside-------401"/>
+            </log>
+            <sequence key="errorSequence" />
+        </case>
+        <case regex="404">
+            <log level="custom">
+                <property name="404" value="inside-------404"/>
+            </log>
+            <sequence key="errorSequence" />
+        </case>
+        <default>
+            <log level="custom">
+                <property name="default" value="inside-------default"/>
+            </log>
+            <payloadFactory description="Create error response payload" media-type="json">
+                <format>
+                    {
+                        "to": "$1",
+                        "messageCount": $2,
+                        "messageId": "$3",
+                        "status": "$4",
+                        "description": "$5"
+                    }
+                </format>
+                    <args>
+                        <arg evaluator="xml" expression="get-property('to')" />
+                        <arg evaluator="json" expression="json-eval($.messages[0].messageCount)" />
+                        <arg evaluator="json" expression="json-eval($.messages[0].messageId)" />
+                        <arg evaluator="json" expression="json-eval($.messages[0].status.groupName)" />
+                        <arg evaluator="json" expression="json-eval($.messages[0].status.description)" />
+                    </args>
+            </payloadFactory>
+            <property name="tmResponse" expression="json-eval($)" ></property>
+            <log description="Log failure details" level="full">
+                <property name="tmResponse--" expression="get-property('tmResponse')"/>
+            </log>
+        </default>
+    </switch>
+
+            <log level="full">
+                <property name="endpoint" value="before endpoint-------"/>
+            </log>
     <call>
         <endpoint key="LogAPI" />
     </call>
+
+            <log level="full">
+                <property name="afendpoint" value="aftere endpoint-------"/>
+            </log>
     <property name="SC_ACCEPTED" value="false" scope="axis2"/>
-    <property name="HTTP_SC" value="200" scope="axis2"/>
+    <property name="HTTP_SC" expression="get-property('statusCode')" scope="axis2"/>
     <payloadFactory media-type="json">
         <format>$1</format>
         <args>
-            <arg expression="get-property('infobipResponse')"></arg>
+            <arg expression="get-property('tmResponse')"></arg>
         </args>
     </payloadFactory>
-    <log level="headers">
-        <property name="headers--------" value="-----"></property>
-    </log>
     <respond />
 
 </sequence>

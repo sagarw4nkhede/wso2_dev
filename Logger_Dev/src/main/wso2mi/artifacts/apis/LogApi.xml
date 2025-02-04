@@ -19,30 +19,48 @@
 
             <property name="Body" expression="json-eval($.)" scope="default" />
             <property name="Exception" expression="get-property('transport','exception')" />
-            <property name="Integration ID" expression="get-property('transport','integrationNo')" />
-            <property name="Error Code" expression="get-property('transport','errorCode')" />
+            <property name="error" expression="get-property('transport','error')" />
+            <property name="errorDetails" expression="get-property('transport','errorDetails')" />
+            <property name="errorStatusCode" expression="get-property('transport','errorStatusCode')" />
+            <property name="errorMsgId" expression="get-property('transport','errorMsgId')" />
+            <property name="integrationNo" expression="get-property('transport','integrationNo')" />
             <property name="Type" expression="get-property('transport','type')" />
 
-            <call>
-                <endpoint key="GetEmail" />
-            </call>
-            <property name="emailPayload" expression="//*[local-name()='config_data']/text()" scope="default" type="STRING" />
-            
-            <payloadFactory media-type="json">
-                <format>{ "emailPayload": $1 }</format>
-                <args>
-                    <arg evaluator="xml" expression="get-property('emailPayload')" />
-                </args>
-            </payloadFactory>
-
-            <property name="emailId" expression="json-eval($.emailPayload.email_id)" scope="default" />
             <property name="exception" expression="get-property('Exception')" />
-            <property name="Integration ID" expression="get-property('Integration ID')" />
-            <property name="Error Code" expression="get-property('Error Code')" />
-
-            <filter xpath="boolean(get-property('exception'))">
+            <property name="integrationNo" expression="get-property('integrationNo')" />
+            <property name="error" expression="get-property('error')" />
+            <property name="errorDetails" expression="get-property('errorDetails')" />
+            <property name="errorStatusCode" expression="get-property('errorStatusCode')" />
+            <property name="errorMsgId" expression="get-property('errorMsgId')" />
+            <log level="full">
+                <property name="integrationNo---------" expression="get-property('integrationNo')" />
+                <property name="Error Code" expression="get-property('Error Code')" />
+                <property name="Exception" expression="get-property('Exception')" />
+                <property name="error" expression="get-property('error')" />
+                <property name="errorDetails" expression="get-property('errorDetails')" />
+                <property name="errorStatusCode---" expression="get-property('errorStatusCode')" />
+                <property name="Type" expression="get-property('Type')" />
+                <property name="errorMsgId" expression="get-property('errorMsgId')" />
+            </log>
+            <filter xpath="boolean(get-property('error'))">
                 <then>
                     <property name="type" value="ERROR" scope="default" />
+                    <log level="full">
+                        <property name="ERROR-----" value="Then Error in sending email"/>
+                    </log>
+                    <call>
+                        <endpoint key="GetEmail" />
+                    </call>
+                    <property name="emailPayload" expression="//*[local-name()='config_data']/text()" scope="default" type="STRING" />
+                    
+                    <payloadFactory media-type="json">
+                        <format>{ "emailPayload": $1 }</format>
+                        <args>
+                            <arg evaluator="xml" expression="get-property('emailPayload')" />
+                        </args>
+                    </payloadFactory>
+
+                    <property name="emailId" expression="json-eval($.emailPayload.email_id)" scope="default" />
 
                     <payloadFactory media-type="json" template-type="default">
                         <format><![CDATA[
@@ -91,9 +109,9 @@
                         </format>
                         <args>
                             <arg expression="get-property('emailId')" />
-                            <arg expression="get-property('Integration ID')" />
-                            <arg expression="get-property('exception')" />
-                            <arg expression="get-property('messageId')" />
+                            <arg expression="get-property('integrationNo')" />
+                            <arg expression="get-property('errorDetails')" />
+                            <arg expression="get-property('errorMsgId')" />
                         </args>
                     </payloadFactory>
                     <call>
@@ -112,12 +130,12 @@
                             </logRequest>
                         </format>
                         <args>
-                            <arg expression="get-property('Integration ID')" evaluator="xml" />
+                            <arg expression="get-property('integrationNo')" evaluator="xml" />
                             <arg expression="get-property('fullPayload')" evaluator="xml" />
                             <arg expression="get-property('type')" evaluator="xml" />
-                            <arg expression="get-property('exception')" evaluator="xml" />
-                            <arg expression="get-property('Error Code')" evaluator="xml" />
-                            <arg expression="get-property('messageId')"/>
+                            <arg expression="get-property('errorDetails')" evaluator="xml" />
+                            <arg expression="get-property('errorStatusCode')" evaluator="xml" />
+                            <arg expression="get-property('errorMsgId')"/>
                         </args>
                     </payloadFactory>
 
@@ -126,6 +144,10 @@
                     </call>
                 </then>
                 <else>
+                    <log level="full">
+                        <property name="else" value="else--------------"/>
+                        <property name="payload ---" expression="get-property('fullPayload')"/>
+                    </log>
                     <payloadFactory media-type="xml">
                         <format>
                             <logRequest>
@@ -138,7 +160,7 @@
                             </logRequest>
                         </format>
                         <args>
-                            <arg expression="get-property('Integration ID')" evaluator="xml" />
+                            <arg expression="get-property('integrationNo')" evaluator="xml" />
                             <arg expression="get-property('Body')" />
                             <arg expression="get-property('Type')" evaluator="xml" />
                             <arg expression="get-property('exception')" evaluator="xml" />
