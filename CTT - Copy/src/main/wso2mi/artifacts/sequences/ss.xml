@@ -1,0 +1,54 @@
+<sequence name="process" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <!-- Save the Original JSON Payload to Avoid Stream Closure Issues -->
+    <property name="originalPayload" expression="json-eval($.)" scope="default"/>
+    <!-- Log the Payload to Verify It's Not Lost -->
+    <log level="full">
+        <property name="INFO" value="Processing VerifyID API Request"/>
+        <property name="IncomingPayload" expression="get-property('originalPayload')"/>
+    </log>
+    <!-- Extract Values from Stored Payload Instead of Consuming the Stream -->
+    <property name="requestId" expression="json-eval($.requestHeader.requestId)" scope="default"/>
+    <property name="eventName" expression="json-eval($.requestHeader.eventName)" scope="default"/>
+    <property name="mobileNum" expression="json-eval($.mobileNum)" scope="default"/>
+    <property name="last6DigitNo" expression="json-eval($.last6DigitNo)" scope="default"/>
+    <property name="responseDt" expression="json-eval($.responseDt)" scope="default"/>
+    <property name="integrationNo" scope="transport" type="STRING" value="I1125"/>
+    <!-- Log Extracted Values to Verify JSON Parsing -->
+    <log level="full">
+        <property name="Extracted requestId" expression="get-property('requestId')"/>
+        <property name="Extracted eventName" expression="get-property('eventName')"/>
+        <property name="Extracted mobileNum" expression="get-property('mobileNum')"/>
+        <property name="Extracted last6DigitNo" expression="get-property('last6DigitNo')"/>
+        <property name="Extracted responseDt" expression="get-property('responseDt')"/>
+        <property name="Extracted integrationNo" expression="get-property('integrationNo')"/>
+    </log>
+    <!-- Ensure Payload is Rebuilt Before Sending to LogAPI -->
+    <payloadFactory media-type="json">
+        <format>
+            {
+            "requestHeader": {
+            "requestId": "$1",
+            "eventName": "$2"
+            },
+            "mobileNum": "$3",
+            "last6DigitNo": "$4",
+            "responseDt": "$5"
+            }
+        </format>
+        <args>
+            <arg evaluator="json" expression="get-property('requestId')"/>
+            <arg evaluator="json" expression="get-property('eventName')"/>
+            <arg evaluator="json" expression="get-property('mobileNum')"/>
+            <arg evaluator="json" expression="get-property('last6DigitNo')"/>
+            <arg evaluator="json" expression="get-property('responseDt')"/>
+        </args>
+    </payloadFactory>
+    <!-- Call API to Log Incoming Request to DB -->
+    <call>
+        <endpoint key="LogAPI"/>
+    </call>
+    <!-- Ensure Response is Returned Properly -->
+    <property name="SC_ACCEPTED" value="false" scope="axis2"/>
+    <property name="HTTP_SC" value="200" scope="axis2"/>
+    <respond/>
+</sequence>
