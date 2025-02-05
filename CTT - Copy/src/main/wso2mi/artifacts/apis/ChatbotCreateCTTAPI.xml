@@ -5,19 +5,22 @@
             <log level="full">
                 <property name="RequestPayload" expression="json-eval($.)"/>
             </log>
-            <filter regex="Chatbot-001" source="json-eval($.requestHeader.requestId)">
+            <!-- Extract values from the incoming request -->
+            <property name="requestId" expression="json-eval($.requestHeader.requestId)" scope="default"/>
+            <property name="eventName" expression="json-eval($.requestHeader.eventName)" scope="default"/>
+            <property name="mobileNum" expression="json-eval($.mobileNum)" scope="default"/>
+            <property name="createCtt" expression="json-eval($.createCtt)" scope="default"/>
+            <property name="reason" expression="json-eval($.reason)" scope="default"/>
+            <property name="comment" expression="json-eval($.comment)" scope="default"/>
+            <property name="responseDt" expression="json-eval($.responseDt)" scope="default"/>
+            <filter regex="Chatbot-001" source="get-property('requestId')">
                 <then>
                     <log level="full">
                         <property name="RequestIdCheck" value="RequestId is Chatbot-001"/>
                     </log>
-                    <filter regex="Yes" source="json-eval($.createCtt)">
+                    <filter regex="Yes" source="get-property('createCtt')">
                         <then>
-                            <script language="js">
-                                <![CDATA[
-                                var randomCttNo = "Test-" + Math.floor(Math.random() * 10000000000);
-                                mc.setProperty("dynamicCttNo", randomCttNo);
-                                ]]>
-                            </script>
+                            <property name="dynamicCttNo" expression="fn:concat('Test-', get-property('messageID'))" scope="default"/>
                             <payloadFactory media-type="json" template-type="default">
                                 <format>{
                                     "proactiveCttInfo": {

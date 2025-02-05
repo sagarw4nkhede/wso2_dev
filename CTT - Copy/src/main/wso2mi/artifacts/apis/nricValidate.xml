@@ -1,0 +1,80 @@
+<api xmlns="http://ws.apache.org/ns/synapse" name="VerifyIDAPI" context="/verify">
+    <resource methods="POST" uri-template="/nricValidate">
+        <inSequence>
+            <property name="mobileNum" expression="json-eval($.mobileNum)" scope="default" type="STRING"/>
+            <property name="requestId" expression="json-eval($.requestHeader.requestId)" scope="default" type="STRING"/>
+            <property name="last6DigitNo" expression="json-eval($.last6DigitNo)" scope="default" type="STRING"/>
+            <property name="responseDt" expression="json-eval($.responseDt)" scope="default" type="STRING"/>
+            <log level="full">
+                <property name="incomingBody" expression="json-eval($)" scope="default" type="STRING"/>
+                <property name="ReceivedMobileNum" expression="get-property('mobileNum')"/>
+                <property name="ReceivedLast6DigitNo" expression="get-property('last6DigitNo')"/>
+                <property name="ReceivedResponseDt" expression="get-property('responseDt')"/>
+                <property name="requestId-------" expression="get-property('requestId')"/>
+            </log>
+            <property name="integrationNo" scope="transport" type="STRING" value="I1125"/>
+            <property name="type" scope="transport" type="STRING" value="Incoming Request NRIC"/>
+            <property name="requestId" scope="transport" type="STRING" expression="get-property('requestId')"/>
+            <call blocking="false">
+                <endpoint key="LogAPI"/>
+            </call>
+            <log level="full">
+                <property name="after --LogAPI-----" value="------"/>
+            </log>
+            <switch source="get-property('last6DigitNo')">
+                <case regex="123456">
+                    <property name="address" value="Jalan Bangsar"/>
+                    <property name="unifiId" value="ahmad@unifi"/>
+                    <property name="validityFlag" value="Valid"/>
+                </case>
+                <case regex="654321">
+                    <property name="address" value="Jalan Ampang"/>
+                    <property name="unifiId" value="siti@unifi"/>
+                    <property name="validityFlag" value="Valid"/>
+                </case>
+                <default>
+                    <property name="address" value="Unknown"/>
+                    <property name="unifiId" value="unknown@unifi"/>
+                    <property name="validityFlag" value="Invalid"/>
+                </default>
+            </switch>
+            <payloadFactory media-type="json" template-type="default">
+                <format>{
+                    "idVerificationStatus": {
+                    "requestId": "$1",
+                    "address": "$2",
+                    "unifiId": "$3",
+                    "validityFlag": "$4"
+                    }
+                    }</format>
+                <args>
+                    <arg expression="get-property('requestId')"/>
+                    <arg expression="get-property('address')"/>
+                    <arg expression="get-property('unifiId')"/>
+                    <arg expression="get-property('validityFlag')"/>
+                </args>
+            </payloadFactory>
+            <property name="integrationNo" scope="transport" type="STRING" value="I1125"/>
+            <property name="type" scope="transport" type="STRING" value="Response body NRIC"/>
+            <property name="requestId" scope="transport" type="STRING" expression="get-property('requestId')"/>
+            <call blocking="false">
+                <endpoint key="LogAPI"/>
+            </call>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <log level="full">
+                <property name="Fault" value="An error occurred while processing the request."/>
+            </log>
+            <payloadFactory media-type="json" template-type="default">
+                <format>{
+                    "error": {
+                    "message": "Failed to process the request. Please try again later."
+                    }
+                    }</format>
+                <args/>
+            </payloadFactory>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>
