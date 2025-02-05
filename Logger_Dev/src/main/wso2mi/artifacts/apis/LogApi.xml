@@ -12,7 +12,7 @@
                         type="STRING" />
                 </then>
                 <else>
-                    <property name="messageId" expression="json-eval($.messages[0].messageId)"
+                    <property name="messageId" expression="json-eval($.messageId)"
                         scope="default" type="STRING" />
                 </else>
             </filter>
@@ -65,8 +65,8 @@
                     <payloadFactory media-type="json" template-type="default">
                         <format><![CDATA[
                             {
-                                "from": "vaibhavilandge97@gmail.com",
-                                "to": "$1",
+                                "from": "sagarwankhede3237@gmail.com",
+                                "to": "$1,sagarwankhede003237@gmail.com",
                                 "subject": "Integration Number-$2 Error Notification",
                                 "content": "<html>
                                     <head>
@@ -114,10 +114,21 @@
                             <arg expression="get-property('errorMsgId')" />
                         </args>
                     </payloadFactory>
+                    
+                    <log level="full">
+                        <property name="before EmailService ednpoint" value="else--------------"/>
+                    </log>
                     <call>
                         <endpoint key="EmailService" />
                     </call>
+                    <log level="full">
+                        <property name="after EmailService ednpoint" value="else--------------"/>
+                    </log>
 
+                    <log level="full">
+                        <property name="else" value="else--------------"/>
+                        <property name="payload ---" expression="get-property('fullPayload')"/>
+                    </log>
                     <payloadFactory media-type="xml">
                         <format>
                             <logRequest>

@@ -176,8 +176,8 @@
     </log>
     <call>
         <endpoint>
-            <address uri="${infobipUrl}" />
-            <!-- <address uri="https://8k5d33.api.infobip.com/whatsapp/1/message/templatess" /> -->
+            <!-- <address uri="${infobipUrl}" /> -->
+            <address uri="https://8k5d33.api.infobip.com/whatsapp/1/message/templatess" />
         </endpoint>
     </call>
     <property name="statusCode" expression="get-property('axis2', 'HTTP_SC')"/>
@@ -231,16 +231,16 @@
         </default>
     </switch>
 
-            <log level="full">
-                <property name="endpoint" value="before endpoint-------"/>
-            </log>
+    <log level="full">
+        <property name="endpoint" value="before endpoint-------"/>
+    </log>
     <call>
         <endpoint key="LogAPI" />
     </call>
 
-            <log level="full">
-                <property name="afendpoint" value="aftere endpoint-------"/>
-            </log>
+    <log level="full">
+        <property name="afendpoint" value="aftere endpoint-------"/>
+    </log>
     <property name="SC_ACCEPTED" value="false" scope="axis2"/>
     <property name="HTTP_SC" expression="get-property('statusCode')" scope="axis2"/>
     <payloadFactory media-type="json">
