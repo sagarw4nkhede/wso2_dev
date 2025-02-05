@@ -46,13 +46,8 @@
         </call-query>
     </resource>
     <query id="select_all_CONFIGS_query" useConfig="log">
-        <sql>SELECT
-            config_data FROM CONFIGS where config_key="smtp"</sql>
-        <result element="CONFIGSCollection" rowName="CONFIGS">
-            <element column="config_data" name="config_data" xsdType="xs:string" />
-            <result outputType="json">
-                {"configs":{"config":[{"value":"$config_data"}]}}</result>
-        </result>
+        <sql>SELECT config_data FROM CONFIGS where config_key="smtp_config"</sql>
+      <result outputType="json">{"configs":{"config":[{"value":"$config_data"}]}}</result>
     </query>
     <resource method="GET" path="CONFIGS">
         <call-query href="select_all_CONFIGS_query" />

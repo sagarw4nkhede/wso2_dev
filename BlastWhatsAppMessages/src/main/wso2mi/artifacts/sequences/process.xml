@@ -176,8 +176,8 @@
     </log>
     <call>
         <endpoint>
-            <!-- <address uri="${infobipUrl}" /> -->
-            <address uri="https://8k5d33.api.infobip.com/whatsapp/1/message/templatess" />
+            <address uri="${infobipUrl}" />
+            <!-- <address uri="https://8k5d33.api.infobip.com/whatsapp/1/message/templatess" /> -->
         </endpoint>
     </call>
     <property name="statusCode" expression="get-property('axis2', 'HTTP_SC')"/>

@@ -51,8 +51,7 @@
                     <call>
                         <endpoint key="GetEmail" />
                     </call>
-                    <property name="emailPayload" expression="//*[local-name()='config_data']/text()" scope="default" type="STRING" />
-                    
+                    <property name="emailPayload" expression="//*[local-name()='value']/text()" scope="default" type="STRING" />
                     <payloadFactory media-type="json">
                         <format>{ "emailPayload": $1 }</format>
                         <args>
@@ -60,14 +59,15 @@
                         </args>
                     </payloadFactory>
 
-                    <property name="emailId" expression="json-eval($.emailPayload.email_id)" scope="default" />
+                    <property name="from" expression="json-eval($.emailPayload.from)" scope="default" />
+                    <property name="to" expression="json-eval($.emailPayload.to)" scope="default" />
 
                     <payloadFactory media-type="json" template-type="default">
                         <format><![CDATA[
                             {
-                                "from": "sagarwankhede3237@gmail.com",
-                                "to": "$1,sagarwankhede003237@gmail.com",
-                                "subject": "Integration Number-$2 Error Notification",
+                                "from": "$1",
+                                "to": "$2",
+                                "subject": "Integration Number-$3 Error Notification",
                                 "content": "<html>
                                     <head>
                                         <style>
@@ -87,15 +87,15 @@
                                         <table>
                                             <tr>
                                                 <th>Integration No</th>
-                                                <td>$2</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Error Details</th>
                                                 <td>$3</td>
                                             </tr>
                                             <tr>
-                                                <th>Message ID</th>
+                                                <th>Error Details</th>
                                                 <td>$4</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Message ID</th>
+                                                <td>$5</td>
                                             </tr>
                                         </table>
                                         <div class='footer'>
@@ -108,27 +108,20 @@
                             ]]>
                         </format>
                         <args>
-                            <arg expression="get-property('emailId')" />
+                            <arg expression="get-property('from')" />
+                            <arg expression="get-property('to')" />
                             <arg expression="get-property('integrationNo')" />
                             <arg expression="get-property('errorDetails')" />
                             <arg expression="get-property('errorMsgId')" />
                         </args>
                     </payloadFactory>
-                    
-                    <log level="full">
-                        <property name="before EmailService ednpoint" value="else--------------"/>
-                    </log>
                     <call>
                         <endpoint key="EmailService" />
                     </call>
                     <log level="full">
-                        <property name="after EmailService ednpoint" value="else--------------"/>
+                        <property name="after EmailService ednpoint" value="--------------"/>
                     </log>
 
-                    <log level="full">
-                        <property name="else" value="else--------------"/>
-                        <property name="payload ---" expression="get-property('fullPayload')"/>
-                    </log>
                     <payloadFactory media-type="xml">
                         <format>
                             <logRequest>
