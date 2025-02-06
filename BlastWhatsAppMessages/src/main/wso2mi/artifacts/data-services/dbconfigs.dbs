@@ -1,4 +1,4 @@
-<data name="dbconfigurations" serviceNamespace="http://ws.wso2.org/dataservice/samples/json_sample" transports="http https">
+<data name="dbconfigs" serviceNamespace="" transports="http https">
    <description>Exposing the data service as a REST service.</description>
    <config id="infobipDS">
       <property name="username">wso2</property>

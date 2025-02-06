@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sequence name="errorSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
-        <property name="errorStatus" expression="json-eval($.requestError.serviceException.messageId)"/>
-        <property name="error" scope="transport" expression="json-eval($.requestError.serviceException.messageId)"/>
-        <property name="description" expression="json-eval($.requestError.serviceException.text)"/>
-        <property name="errorMsgId" scope="transport" expression="get-property('messageId')"/>
-        <property name="errorDetails" scope="transport" expression="fn:concat(get-property('errorStatus'), ' - ', get-property('description'))"/>
-        <property name="errorStatusCode" scope="transport" expression="get-property('statusCode')"/>
+    <property name="errorStatus" expression="json-eval($.requestError.serviceException.messageId)"/>
+    <property name="error" scope="transport" expression="json-eval($.requestError.serviceException.messageId)"/>
+    <property name="description" expression="json-eval($.requestError.serviceException.text)"/>
+    <property name="errorMsgId" scope="transport" expression="get-property('messageId')"/>
+    <property name="errorDetails" scope="transport" expression="fn:concat(get-property('errorStatus'), ' - ', get-property('description'))"/>
+    <property name="errorStatusCode" scope="transport" expression="get-property('statusCode')"/>
     <log description="Log failure details" level="custom">
         <property name="message" value="Processing failed"/>
         <property name="error_message" expression="$ctx:ERROR_MESSAGE"/>
@@ -33,6 +33,6 @@
     </payloadFactory>
     <property name="tmResponse" expression="json-eval($)"></property>
     <log description="Log failure details" level="full">
-        <property name="tmResponse--" expression="get-property('tmResponse')"/>
+        <property name="tmResponse-errrr-" expression="get-property('tmResponse')"/>
     </log>
 </sequence> 

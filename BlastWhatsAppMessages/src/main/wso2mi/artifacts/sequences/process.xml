@@ -2,6 +2,7 @@
 <sequence name="process" trace="disable" onError="onErrorSequence" xmlns="http://ws.apache.org/ns/synapse">
 
     <!-- <script language="js"><![CDATA[throw new Error("This is the reason why the processing has failed.");]]></script> -->
+    <!-- <sequence key="getInfobipConfigsss" /> -->
     <sequence key="getInfobipConfigs" />
 
     <filter xpath="get-property('placeholders') and not(get-property('buttons'))">
@@ -189,24 +190,9 @@
     <property name="integrationNo" scope="transport" type="STRING" value="I1125" />
     <property name="type" scope="transport" type="STRING" value="Response Body" />
 
-    <switch source="get-property('axis2', 'HTTP_SC')">
-        <case regex="401">
-            <log level="custom">
-                <property name="401" value="inside-------401"/>
-            </log>
-            <sequence key="errorSequence" />
-        </case>
-        <case regex="404">
-            <log level="custom">
-                <property name="404" value="inside-------404"/>
-            </log>
-            <sequence key="errorSequence" />
-        </case>
-        <default>
-            <log level="custom">
-                <property name="default" value="inside-------default"/>
-            </log>
-            <payloadFactory description="Create error response payload" media-type="json">
+    <switch source="get-property('statusCode')">
+        <case regex="200">
+            <payloadFactory description="Create response payload" media-type="json">
                 <format>
                     {
                         "to": "$1",
@@ -225,8 +211,19 @@
                     </args>
             </payloadFactory>
             <property name="tmResponse" expression="json-eval($)" ></property>
-            <log description="Log failure details" level="full">
-                <property name="tmResponse--" expression="get-property('tmResponse')"/>
+            <log level="full">
+                <property name="tmResponse-- 200" expression="get-property('tmResponse')"/>
+                <property name="statusCode--in  200" expression="get-property('statusCode')"/>
+
+            </log>
+        </case>
+        <default>
+            <log level="custom">
+                <property name="default" value="inside-------default"/>
+            </log>
+            <sequence key="errorSequence" />
+            <log level="full">
+                <property name="default tmResponse-- 200" expression="get-property('tmResponse')"/>
             </log>
         </default>
     </switch>
@@ -240,6 +237,7 @@
 
     <log level="full">
         <property name="afendpoint" value="aftere endpoint-------"/>
+        <property name="SC_ACCEPTED (Before Setting)" expression="get-property('axis2', 'SC_ACCEPTED')"/>
     </log>
     <property name="SC_ACCEPTED" value="false" scope="axis2"/>
     <property name="HTTP_SC" expression="get-property('statusCode')" scope="axis2"/>
