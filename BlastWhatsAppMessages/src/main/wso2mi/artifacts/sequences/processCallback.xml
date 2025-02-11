@@ -38,6 +38,7 @@
                         "sentAt": "$4",
                         "status": "$5",
                         "description": "$6"
+                        "callbackData": "Callback data"
                     }
                 </format>
                 <args>
@@ -63,6 +64,7 @@
                         "seenAt": "$4",
                         "status": "SEEN",
                         "description": "Message has been seen by the recipient."
+                        "callbackData": "Callback data"
                     }
                 </format>
                 <args>
@@ -77,11 +79,15 @@
     <log level="full">
         <property name="Info" value="PayloadFactory done------------------" />
     </log>
+    <!-- Calling TM URL -->
     <call>
         <endpoint>
             <address uri="http://localhost:8290/tm-url" />
         </endpoint>
     </call>
+    <log level="full">
+        <property name="Info" value="after tm-url------------------" />
+    </log>
     <respond />
 
 </sequence>

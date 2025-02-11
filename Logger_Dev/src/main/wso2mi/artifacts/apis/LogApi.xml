@@ -69,44 +69,47 @@
                                 "to": "$2",
                                 "subject": "Integration Number-$3 Error Notification",
                                 "content": "<html>
-                                    <head>
-                                        <style>
-                                            body { font-family: Arial, sans-serif; color: #333; }
-                                            h2 { color: #2F4F4F; font-size: 20px; margin-top: 0; font-weight: normal; }
-                                            p { font-size: 16px; line-height: 1.5; }
-                                            table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid black; }
-                                            th, td { padding: 10px; text-align: left; border: 1px solid black; }
-                                            th { background-color: yellow; color: black; font-weight: normal; }
-                                            tr:nth-child(even) { background-color: #f2f2f2; }
-                                            .footer { font-size: 12px; color: #777; margin-top: 20px; }
-                                        </style>
-                                    </head>
-                                    <body>
-                                        <h2>Dear Customer,</h2>
-                                        <p>We encountered an issue during your recent transaction. Please find the details below:</p>
-                                        <table>
-                                            <tr>
-                                                <th>Integration No</th>
-                                                <td>$3</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Error Details</th>
-                                                <td>$4</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Message ID</th>
-                                                <td>$5</td>
-                                            </tr>
-                                        </table>
-                                        <div class='footer'>
-                                            <p>If you have any questions, please contact support.</p>
-                                        </div>
-                                    </body>
-                                </html>",
+                                                <head>
+                                                    <style>
+                                                        body { font-family: 'Arial', sans-serif; color: #333; background-color: #f9f9f9; padding: 20px; margin: 0; box-sizing: border-box; }
+                                                        .email-container { max-width: 650px; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 0 auto; }
+                                                        h2 { color: #333; font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+                                                        p { font-size: 16px; line-height: 1.7; margin-bottom: 15px; }
+                                                        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                                                        th, td { padding: 14px; text-align: left; border: 1px solid #ddd; font-size: 16px; }
+                                                        th { background-color: #333; color: white; font-weight: bold; text-align: center; }
+                                                        tr:nth-child(even) { background-color: #f4f4f4; }
+                                                        .footer { font-size: 14px; color: #777; margin-top: 25px; text-align: center; }
+                                                    </style>
+                                                </head>
+                                                <body>
+                                                    <div class='email-container'>
+                                                        <h2>Error Notification</h2>
+                                                        <p>Dear Customer,</p>
+                                                        <p>We encountered an issue during your recent transaction. Please find the details below:</p>
+                                                        <table>
+                                                            <tr>
+                                                                <th style='width: 40%;'>Integration No</th>
+                                                                <td style='width: 60%;'>$3</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Error Details</th>
+                                                                <td>$4</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Message ID</th>
+                                                                <td>$5</td>
+                                                            </tr>
+                                                        </table>
+                                                        <div class='footer'>
+                                                            <p>If you have any questions, please contact <a href='mailto:support@yourcompany.com'>support</a>.</p>
+                                                        </div>
+                                                    </div>
+                                                </body>
+                                            </html>",
                                 "contentType": "text/html"
                             }
-                            ]]>
-                        </format>
+                        ]]></format>
                         <args>
                             <arg expression="get-property('from')" />
                             <arg expression="get-property('to')" />

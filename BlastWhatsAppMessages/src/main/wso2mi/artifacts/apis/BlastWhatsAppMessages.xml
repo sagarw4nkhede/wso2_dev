@@ -14,15 +14,20 @@
             <property name="imageUrl" expression="json-eval($.imageUrl)" scope="default" />
             <property name="mediaUrl" expression="json-eval($.mediaUrl)" scope="default" />
             <property name="buttons" expression="json-eval($.buttons)" scope="default" />
-            <property name="placeholders" expression="json-eval($.placeholders)" scope="default" />
-            <property name="notifyUrl" value="https://mytestdomain.loca.lt/callback" />
+            <property name="placeholders" expression="json-eval($.placeholders.*.*)" scope="default" />
+            <property name="notifyUrl" value="https://wso2api.devwso2.kraftsoftwaresolutions.com/blastwhatsappmessages/1.0.0/callback" />
 
             <property name="integrationNo" scope="transport" type="STRING" value="I1125" />
             <property name="type" scope="transport" type="STRING" value="Incoming Request" />
 
-            <call blocking="false">
+            <call >
                 <endpoint key="LogAPI" />
             </call>
+            
+            <log level="full">
+                <property name="INFO" value="Starting integration processing..." />
+                <property name="codebwm-=" expression="get-property('axis2', 'HTTP_SC')"/>
+            </log>
             <property description="retry count " name="RETRY_COUNT" scope="default" type="STRING" value="0" />
             <sequence key="process" />
         </inSequence>
